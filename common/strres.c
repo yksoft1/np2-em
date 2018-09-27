@@ -43,7 +43,11 @@ const OEMCHAR str_posy[] = OEMTEXT("posy");
 const OEMCHAR str_width[] = OEMTEXT("width");
 const OEMCHAR str_height[] = OEMTEXT("height");
 
+#if defined(CPUCORE_IA32) && defined (SUPPORT_PC9821)
+const OEMCHAR str_np2[] = OEMTEXT("Neko Project 21");
+#else
 const OEMCHAR str_np2[] = OEMTEXT("Neko Project II");
+#endif
 const OEMCHAR str_resume[] = OEMTEXT("Resume");
 
 const OEMCHAR str_VM[] = OEMTEXT("VM");

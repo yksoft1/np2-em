@@ -25,7 +25,11 @@ typedef struct {
 	int		height;
 } SCRNSTAT;
 
+#if defined(CPUCORE_IA32) && defined (SUPPORT_PC9821)
+static const char app_name[] = "Neko Project 21";
+#else
 static const char app_name[] = "Neko Project II";
+#endif
 
 static	SCRNMNG		scrnmng;
 static	SCRNSTAT	scrnstat;
