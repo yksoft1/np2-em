@@ -1,5 +1,6 @@
 #include	"compiler.h"
 #include	"inputmng.h"
+#include	"mousemng.h"
 #include	"taskmng.h"
 #include	"sdlkbd.h"
 #include "sysmenu.h"
@@ -36,6 +37,7 @@ void taskmng_rol(void) {
 	switch(e.type) {
 		case SDL_MOUSEMOTION:
 			if (menuvram == NULL) {
+				mousemng_onmove(&e.motion);
 			}
 			else {
 				menubase_moving(e.motion.x, e.motion.y, 0);
@@ -61,11 +63,15 @@ void taskmng_rol(void) {
 #endif
 					else
 					{
-						sysmenu_menuopen(0, e.button.x, e.button.y);
+						//sysmenu_menuopen(0, e.button.x, e.button.y);
+						mousemng_buttonevent(&e.button);
 					}
 					break;
 
 				case SDL_BUTTON_RIGHT:
+					if (menuvram == NULL) {
+						mousemng_buttonevent(&e.button);
+					}
 					break;
 			}
 			break;
@@ -76,21 +82,38 @@ void taskmng_rol(void) {
 					if (menuvram != NULL)
 					{
 						menubase_moving(e.button.x, e.button.y, 1);
+					} else {
+						mousemng_buttonevent(&e.button);
 					}
 					break;
 
 				case SDL_BUTTON_RIGHT:
+					if (menuvram == NULL) {
+						mousemng_buttonevent(&e.button);
+					}
 					break;
 			}
 			break;
 
 		case SDL_KEYDOWN:
 			if (e.key.keysym.sym == SDLK_F11) {
+#ifdef EMSCRIPTEN //in web browsers, F11 is commonly occupied. Use CTRL+F11
+			if ((e.key.keysym.mod == KMOD_LCTRL) || (e.key.keysym.mod == KMOD_RCTRL)) {
+#endif 
 				if (menuvram == NULL) {
 					sysmenu_menuopen(0, 0, 0);
 				}
 				else {
 					menubase_close();
+				}
+			}
+#ifdef EMSCRIPTEN
+			}
+#endif 
+			else if (e.key.keysym.scancode == SDL_SCANCODE_F12) {
+				if ((e.key.keysym.mod == KMOD_LCTRL) || (e.key.keysym.mod == KMOD_RCTRL)) {
+					//use CTRL+F12 to lock mouse like win32 builds do
+					mousemng_toggle(MOUSEPROC_SYSTEM);
 				}
 			}
 			else {

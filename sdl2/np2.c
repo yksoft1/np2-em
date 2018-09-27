@@ -5,6 +5,7 @@
 #include	"commng.h"
 #include	"fontmng.h"
 #include	"inputmng.h"
+#include	"mousemng.h"
 #include	"scrnmng.h"
 #include	"soundmng.h"
 #include	"sysmng.h"
@@ -141,7 +142,8 @@ int np2_main(int argc, char *argv[]) {
 	if (sysmenu_create() != SUCCESS) {
 		goto np2main_err3;
 	}
-
+	mousemng_initialize();
+	
 	scrnmng_initialize();
 	if (scrnmng_create(FULLSCREEN_WIDTH, FULLSCREEN_HEIGHT) != SUCCESS) {
 		goto np2main_err4;
