@@ -1,0 +1,12 @@
+*.o
+*.a
+*.dylib
+*.so
+*.dll
+*.exe
+*.bc
+*.js
+*.wasm
+*.data
+*.html
+*.mem
