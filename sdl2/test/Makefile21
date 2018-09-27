@@ -22,7 +22,8 @@ CFLAGS	=	-Wall -O3 -Wstrict-overflow=0 -Wstrict-aliasing=0 -I. -I.. \
 			-I$(NP2_PATH)/io \
 			-I$(NP2_PATH)/mem \
 			-I$(NP2_PATH)/sound \
-			-I$(NP2_PATH)/vram
+			-I$(NP2_PATH)/vram \
+			-I$(NP2_PATH)/zlib
 
 CFLAGS	+=	-DCPUCORE_IA32 -DUSE_FPU -DSUPPORT_PC9821 $(shell sdl2-config --cflags)
 LFLAGS	=
@@ -59,10 +60,11 @@ CPPSRCS	=	./main.c \
 			$(wildcard $(NP2_PATH)/sound/*.c) \
 			$(wildcard $(NP2_PATH)/sound/getsnd/*.c) \
 			$(wildcard $(NP2_PATH)/sound/vermouth/*.c) \
-			$(wildcard $(NP2_PATH)/vram/*.c)
+			$(wildcard $(NP2_PATH)/vram/*.c) \
+			$(wildcard $(NP2_PATH)/zlib/*.c)
 
 OBJS = $(addsuffix .o,$(basename $(CPPSRCS)))
-LIBS = -lm -lz $(shell sdl2-config --libs)
+LIBS = -lm $(shell sdl2-config --libs)
 
 .SUFFIXES: .c.o
 .SUFFIXES: .cpp.o

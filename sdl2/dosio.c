@@ -12,7 +12,11 @@
 #include <dirent.h>
 #endif
 
+#if defined(WIN32)
+static	char	curpath[MAX_PATH] = ".\\";
+#else
 static	char	curpath[MAX_PATH] = "./";
+#endif
 static	char	*curfilep = curpath + 2;
 
 /* ƒtƒ@ƒCƒ‹‘€ì */
