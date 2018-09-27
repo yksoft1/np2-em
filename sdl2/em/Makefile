@@ -33,10 +33,11 @@ CFLAGS	=	-O3 -Wstrict-overflow=0 -Wstrict-aliasing=0 -I. -I.. \
 			-I$(NP2_PATH)/io \
 			-I$(NP2_PATH)/mem \
 			-I$(NP2_PATH)/sound \
-			-I$(NP2_PATH)/vram
+			-I$(NP2_PATH)/vram \
+			-I$(NP2_PATH)/zlib 
 
-CFLAGS	+=	$(SDL_CFLAGS) -s USE_ZLIB=1
-LFLAGS	= 	-s USE_ZLIB=1 
+CFLAGS	+=	$(SDL_CFLAGS)
+LFLAGS	= 	 
 
 TARGET	=	np2.bc
 
@@ -67,10 +68,11 @@ CPPSRCS	=	./main.c \
 			$(wildcard $(NP2_PATH)/sound/*.c) \
 			$(wildcard $(NP2_PATH)/sound/getsnd/*.c) \
 			$(wildcard $(NP2_PATH)/sound/vermouth/*.c) \
-			$(wildcard $(NP2_PATH)/vram/*.c)
-
+			$(wildcard $(NP2_PATH)/vram/*.c) \
+			$(wildcard $(NP2_PATH)/zlib/*.c)
+			
 OBJS = $(addsuffix .o,$(basename $(CPPSRCS)))
-LIBS = -lm -lz $(SDL_LIBS) 
+LIBS = -lm  $(SDL_LIBS) 
 
 .SUFFIXES: .c.o
 .SUFFIXES: .cpp.o
@@ -91,10 +93,10 @@ clean:
 
 html: $(TARGET)
 ifeq ($(PRELOAD), 1)
-	$(CC) -O3 -s USE_SDL=2 -s USE_ZLIB=1 -s WASM=$(WASM) -s TOTAL_MEMORY=$(EMSCRIPTEN_TOTAL_MEMORY)  -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 \
+	$(CC) -O3 -s USE_SDL=2 -s WASM=$(WASM) -s TOTAL_MEMORY=$(EMSCRIPTEN_TOTAL_MEMORY)  -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 \
 	-s EMTERPRETIFY_WHITELIST=@em.txt $(TARGET) \
 	--preload-file $(PREFILE) -o $(basename $(TARGET)).html 
 else
-	$(CC) -O3 -s USE_SDL=2 -s USE_ZLIB=1 -s WASM=$(WASM) -s TOTAL_MEMORY=$(EMSCRIPTEN_TOTAL_MEMORY)  -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 \
+	$(CC) -O3 -s USE_SDL=2 -s WASM=$(WASM) -s TOTAL_MEMORY=$(EMSCRIPTEN_TOTAL_MEMORY)  -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 \
 	-s EMTERPRETIFY_WHITELIST=@em.txt $(TARGET) -o $(basename $(TARGET)).html 
 endif

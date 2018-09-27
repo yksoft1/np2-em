@@ -127,6 +127,9 @@ typedef struct {
 const OEMCHAR	*title;
 const OEMCHAR	*filter;
 const OEMCHAR	*ext;
+#ifdef EMSCRIPTEN
+int drv;
+#endif
 } FSELPRM;
 
 typedef struct {
@@ -136,6 +139,9 @@ typedef struct {
 const OEMCHAR	*filter;
 const OEMCHAR	*ext;
 	OEMCHAR		path[MAX_PATH];
+#ifdef EMSCRIPTEN
+	int drv;
+#endif
 } FILESEL;
 
 static	FILESEL		filesel;
@@ -305,6 +311,10 @@ static int dlgcmd(int msg, MENUID id, long param) {
 			switch(id) {
 				case DID_OK:
 					if (dlgupdate()) {
+#if defined (EMSCRIPTEN)
+						if(filesel.drv>=0xff)diskdrv_setsxsi(filesel.drv-0xff,filesel.path);
+						else diskdrv_setfdd(filesel.drv, filesel.path, 0);
+#endif
 						menubase_close();
 					}
 					break;
@@ -344,9 +354,13 @@ static int dlgcmd(int msg, MENUID id, long param) {
 	return(0);
 }
 
+#if defined (EMSCRIPTEN)
+static BOOL selectfile(const FSELPRM *prm, OEMCHAR *path, int size, 
+														const OEMCHAR *def,int drv) {
+#else
 static BOOL selectfile(const FSELPRM *prm, OEMCHAR *path, int size, 
 														const OEMCHAR *def) {
-
+#endif
 const OEMCHAR	*title;
 
 	soundmng_stop();
@@ -364,9 +378,14 @@ const OEMCHAR	*title;
 		title = prm->title;
 		filesel.filter = prm->filter;
 		filesel.ext = prm->ext;
+#if defined (EMSCRIPTEN)
+		filesel.drv = drv;
+#endif
 	}
 	menudlg_create(DLGFS_WIDTH, DLGFS_HEIGHT, title, dlgcmd);
+#if !defined (EMSCRIPTEN)
 	menubase_modalproc();
+#endif
 	soundmng_play();
 	if (filesel.result) {
 		file_cpyname(path, filesel.path, size);
@@ -400,7 +419,11 @@ void filesel_fdd(REG8 drv) {
 	OEMCHAR	path[MAX_PATH];
 
 	if (drv < 4) {
+#if defined (EMSCRIPTEN)
+		if (selectfile(&fddprm, path, NELEMENTS(path), fdd_diskname(drv),drv)) {
+#else
 		if (selectfile(&fddprm, path, NELEMENTS(path), fdd_diskname(drv))) {
+#endif
 			diskdrv_setfdd(drv, path, 0);
 		}
 	}
@@ -430,7 +453,11 @@ const FSELPRM	*prm;
 		}
 	}
 #endif
+#if defined (EMSCRIPTEN)
+	if ((prm) && (selectfile(prm, path, NELEMENTS(path), p,drv+0xff))) {
+#else
 	if ((prm) && (selectfile(prm, path, NELEMENTS(path), p))) {
+#endif
 		diskdrv_setsxsi(drv, path);
 	}
 }
