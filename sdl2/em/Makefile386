@@ -29,21 +29,24 @@ CFLAGS	=	-O3 -Wstrict-overflow=0 -Wstrict-aliasing=0 -I. -I.. \
 			-I$(NP2_PATH)/embed/menu \
 			-I$(NP2_PATH)/embed/menubase \
 			-I$(NP2_PATH)/generic \
-			-I$(NP2_PATH)/i286c \
+			-I$(NP2_PATH)/i386c \
+			-I$(NP2_PATH)/i386c/ia32 \
+			-I$(NP2_PATH)/i386c/ia32/instructions \
+			-I$(NP2_PATH)/i386c/ia32/instructions/fpu \
 			-I$(NP2_PATH)/io \
 			-I$(NP2_PATH)/mem \
 			-I$(NP2_PATH)/sound \
 			-I$(NP2_PATH)/vram \
-			-I$(NP2_PATH)/zlib 
+			-I$(NP2_PATH)/zlib 			
 
-CFLAGS	+=	$(SDL_CFLAGS)
-LFLAGS	= 	 
+CFLAGS	+=	-DCPUCORE_IA32 -DUSE_FPU  $(SDL_CFLAGS) 
+LFLAGS	= 	
 
 ifeq ($(EMULARITY), 1)
 	CFLAGS	+= -DUSE_EMULARITY_NP2DIR
 endif
 
-TARGET	=	np2.bc
+TARGET	=	np2-386.bc
 
 CPPSRCS	=	./main.c \
 			$(NP2_PATH)/calendar.c \
@@ -63,7 +66,11 @@ CPPSRCS	=	./main.c \
 			$(wildcard $(NP2_PATH)/fdd/*.c) \
 			$(wildcard $(NP2_PATH)/font/*.c) \
 			$(wildcard $(NP2_PATH)/generic/*.c) \
-			$(wildcard $(NP2_PATH)/i286c/*.c) \
+			$(wildcard $(NP2_PATH)/i386c/*.c) \
+			$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
+			$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
+			$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c \
+			$(NP2_PATH)/i386c/ia32/instructions/fpu/fpdummy.c \
 			$(wildcard $(NP2_PATH)/io/*.c) \
 			$(wildcard $(NP2_PATH)/lio/*.c) \
 			$(wildcard $(NP2_PATH)/mem/*.c) \
@@ -97,10 +104,11 @@ clean:
 
 html: $(TARGET)
 ifeq ($(PRELOAD), 1)
+# Use -s BINARYEN_TRAP_MODE="clamp" for FPU...
 	$(CC) -O3 -s USE_SDL=2 -s WASM=$(WASM) -s TOTAL_MEMORY=$(EMSCRIPTEN_TOTAL_MEMORY)  -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 \
-	-s EMTERPRETIFY_WHITELIST=@em.txt $(TARGET) \
+	-s EMTERPRETIFY_WHITELIST=@em.txt $(TARGET) -s BINARYEN_TRAP_MODE="clamp" \
 	--preload-file $(PREFILE) -o $(basename $(TARGET)).html 
 else
 	$(CC) -O3 -s USE_SDL=2 -s WASM=$(WASM) -s TOTAL_MEMORY=$(EMSCRIPTEN_TOTAL_MEMORY)  -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 \
-	-s EMTERPRETIFY_WHITELIST=@em.txt $(TARGET) -o $(basename $(TARGET)).html 
+	-s EMTERPRETIFY_WHITELIST=@em.txt $(TARGET) -s BINARYEN_TRAP_MODE="clamp" -o $(basename $(TARGET)).html 
 endif

@@ -51,7 +51,8 @@ CPPSRCS	=	./main.c \
 			$(wildcard $(NP2_PATH)/i386c/*.c) \
 			$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
 			$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
-			$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul.c \
+			$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c \
+			$(NP2_PATH)/i386c/ia32/instructions/fpu/fpdummy.c \
 			$(wildcard $(NP2_PATH)/io/*.c) \
 			$(wildcard $(NP2_PATH)/lio/*.c) \
 			$(wildcard $(NP2_PATH)/mem/*.c) \

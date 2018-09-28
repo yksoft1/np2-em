@@ -204,14 +204,16 @@ typedef struct {
 } FPU_PTR;
 
 typedef struct {
-	UINT16		control;
-	UINT16		status;
-	UINT16		op;
+	UINT16		control; // 惂屼儗僕僗僞乕
+	UINT16		status; // 僗僥乕僞僗儗僕僗僞乕
+	UINT16		op; // 僆儁僐乕僪儗僕僗僞乕
+	UINT16		tag; // 僞僌儚乕僪儗僕僗僞乕
 
 	FPU_PTR		inst;
 	FPU_PTR		data;
 } FPU_REGS;
 
+#if 0
 typedef struct {
 	UINT8		valid;
 	UINT8		sign;
@@ -231,6 +233,85 @@ typedef struct {
 
 	FP_REG		reg[FPU_REG_NUM];
 } FPU_STAT;
+#endif
+
+typedef enum {
+	TAG_Valid = 0,
+	TAG_Zero  = 1,
+	TAG_Weird = 2,
+	TAG_Empty = 3
+} FP_TAG;
+
+typedef enum {
+	ROUND_Nearest = 0,		
+	ROUND_Down    = 1,
+	ROUND_Up      = 2,	
+	ROUND_Chop    = 3
+} FP_RND;
+
+typedef union {
+#ifdef FLOATX80
+    floatx80 d;
+#else
+    float d;
+#endif
+    double d64;
+    struct {
+        UINT32 lower;
+        SINT32 upper;
+        SINT16 ext;
+    } l;
+    struct {
+        UINT32 lower;
+        UINT32 upper;
+        SINT16 ext;
+    } ul;
+    SINT64 ll;
+} FP_REG;
+
+typedef struct {
+    UINT32 m1;
+    UINT32 m2;
+    UINT16 m3;
+	
+    UINT16 d1;
+    UINT32 d2;
+} FP_P_REG;
+
+typedef union {
+    struct {
+        UINT32 m1;
+        UINT32 m2;
+		UINT16 m3;
+    } ul32;
+    struct {
+        UINT32 m1;
+        UINT32 m2;
+		SINT16 m3;
+    } l32;
+    struct {
+		UINT64 m12;
+		UINT16 m3;
+    } ul64;
+    struct {
+		UINT64 m12;
+		SINT16 m3;
+    } l64;
+} FP_INT_REG;
+
+typedef struct {
+	UINT8		top;
+	UINT8		pc;
+	UINT8		rc;
+	UINT8		dmy[1];
+
+	FP_REG		reg[FPU_REG_NUM+1]; // R0 to R7	
+	FP_TAG		tag[FPU_REG_NUM+1]; // R0 to R7
+	FP_RND		round;
+	FP_INT_REG	int_reg[FPU_REG_NUM+1];
+	UINT8		int_regvalid[FPU_REG_NUM+1];
+} FPU_STAT;
+
 
 typedef struct {
 	CPU_REGS	cpu_regs;
@@ -681,7 +762,11 @@ void dbg_printf(const char *str, ...);
 #define	FPU_STAT_PC		FPU_STAT.pc
 #define	FPU_STAT_RC		FPU_STAT.rc
 
+#if 0
 #define	FPU_ST(i)		FPU_STAT.reg[((i) + FPU_STAT_TOP) & 7]
+#else
+#define	FPU_ST(i)		((FPU_STAT_TOP+ (i) ) & 7)
+#endif
 #define	FPU_REG(i)		FPU_STAT.reg[i]
 
 /* FPU status register */

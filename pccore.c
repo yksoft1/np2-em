@@ -50,6 +50,10 @@
 #include	"keystat.h"
 #include	"debugsub.h"
 
+#if defined(CPUCORE_IA32)
+#include	"ia32/cpu.h"
+#include	"ia32/instructions/fpu/fp.h"
+#endif
 
 const OEMCHAR np2version[] = OEMTEXT(NP2VER_CORE);
 
@@ -372,6 +376,10 @@ void pccore_reset(void) {
 	{
 		mem[0xa3fe2 + i*4] = np2cfg.memsw[i];
 	}
+
+#if defined(USE_FPU) && defined (CPUCORE_IA32)
+	fpu_initialize();
+#endif
 
 	pccore_set(&np2cfg);
 	nevent_allreset();

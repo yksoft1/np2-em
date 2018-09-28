@@ -26,9 +26,7 @@
 #include "compiler.h"
 #include "cpu.h"
 #include "ia32.mcr"
-#if defined(USE_FPU)
 #include "instructions/fpu/fp.h"
-#endif
 
 #include "pccore.h"
 #include "iocore.h"
@@ -75,9 +73,7 @@ ia32_initreg(void)
 	CPU_ADRSMASK = 0x000fffff;
 
 	tlb_init();
-#if defined(USE_FPU)
-	fpu_init();
-#endif
+	fpu_initialize();
 }
 
 void

@@ -42,6 +42,10 @@ CFLAGS	=	-O3 -Wstrict-overflow=0 -Wstrict-aliasing=0 -I. -I.. \
 CFLAGS	+=	-DCPUCORE_IA32 -DSUPPORT_PC9821 $(SDL_CFLAGS) 
 LFLAGS	= 	
 
+ifeq ($(EMULARITY), 1)
+	CFLAGS	+= -DUSE_EMULARITY_NP2DIR
+endif
+
 TARGET	=	np21nf.bc
 
 CPPSRCS	=	./main.c \

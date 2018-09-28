@@ -42,6 +42,10 @@ CFLAGS	=	-O3 -Wstrict-overflow=0 -Wstrict-aliasing=0 -I. -I.. \
 CFLAGS	+=	-DCPUCORE_IA32 -DUSE_FPU -DSUPPORT_PC9821 $(SDL_CFLAGS) 
 LFLAGS	= 	
 
+ifeq ($(EMULARITY), 1)
+	CFLAGS	+= -DUSE_EMULARITY_NP2DIR
+endif
+
 TARGET	=	np21.bc
 
 CPPSRCS	=	./main.c \
@@ -65,7 +69,8 @@ CPPSRCS	=	./main.c \
 			$(wildcard $(NP2_PATH)/i386c/*.c) \
 			$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
 			$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
-			$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul.c \
+			$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c \
+			$(NP2_PATH)/i386c/ia32/instructions/fpu/fpdummy.c \
 			$(wildcard $(NP2_PATH)/io/*.c) \
 			$(wildcard $(NP2_PATH)/lio/*.c) \
 			$(wildcard $(NP2_PATH)/mem/*.c) \
@@ -99,10 +104,11 @@ clean:
 
 html: $(TARGET)
 ifeq ($(PRELOAD), 1)
+# Use -s BINARYEN_TRAP_MODE="clamp" for FPU...
 	$(CC) -O3 -s USE_SDL=2 -s WASM=$(WASM) -s TOTAL_MEMORY=$(EMSCRIPTEN_TOTAL_MEMORY)  -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 \
-	-s EMTERPRETIFY_WHITELIST=@em.txt $(TARGET) \
+	-s EMTERPRETIFY_WHITELIST=@em.txt $(TARGET) -s BINARYEN_TRAP_MODE="clamp" \
 	--preload-file $(PREFILE) -o $(basename $(TARGET)).html 
 else
 	$(CC) -O3 -s USE_SDL=2 -s WASM=$(WASM) -s TOTAL_MEMORY=$(EMSCRIPTEN_TOTAL_MEMORY)  -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 \
-	-s EMTERPRETIFY_WHITELIST=@em.txt $(TARGET) -o $(basename $(TARGET)).html 
+	-s EMTERPRETIFY_WHITELIST=@em.txt $(TARGET) -s BINARYEN_TRAP_MODE="clamp" -o $(basename $(TARGET)).html 
 endif

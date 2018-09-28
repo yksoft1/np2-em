@@ -110,7 +110,14 @@ typedef	unsigned char	BOOL;
 #define	SUPPORT_UTF8
 
 #define	SUPPORT_16BPP
+#define	SCREEN_BPP		16
+
 #define	MEMOPTIMIZE		2
+enum {
+	RGB24_B	= 0,
+	RGB24_G	= 1,
+	RGB24_R	= 2
+};
 
 //#define SOUND_CRITICAL
 #define	SOUNDRESERVE	100
@@ -123,8 +130,6 @@ typedef	unsigned char	BOOL;
 
 #define SUPPORT_ARC
 #define SUPPORT_ZLIB
-
-#define	SCREEN_BPP		16
 
 #ifndef WIN32
 #define	FASTCALL

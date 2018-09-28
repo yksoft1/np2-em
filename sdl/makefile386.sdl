@@ -68,7 +68,7 @@ EMBEDS		=	$(EMBED)/vramhdl.h $(EMBED)/vrammix.h \
 
 
 COPT	= -c -Wall -pipe -O3 \
-			-DCPUCORE_IA32 -DSUPPORT_PC9821 \
+			-DCPUCORE_IA32  \
 			-I$(BASE) -I$(COMMON) -I$(CODECNV) -I$(I286C) -I$(I386C_1) -I$(I386C_2) -I$(I386C_3) -I$(MEM) -I$(IO) \
 			-I$(CBUS) -I$(BIOS) -I$(LIO) -I$(VRAM) -I$(SOUND) -I$(VERMOUTH) \
 			-I$(GETSND) -I$(FDD) -I$(FONT) -I$(GENERIC) -I$(EMBED) -I$(MENU) \
@@ -170,7 +170,7 @@ NP2OBJ += $(OBJ)/fpdummy.o
 endif
 
 NP2LIB	= -lwinmm -mwindows
-NP2BIN	= $(BIN)/np21sdl.exe
+NP2BIN	= $(BIN)/np2sdl-386.exe
 
 
 all: $(OBJBASE) $(BINBASE) $(OBJ) $(BIN) $(NP2BIN)

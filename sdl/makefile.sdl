@@ -9,7 +9,7 @@ OBJBASE	= test
 BINBASE	= test
 
 OBJ		= $(OBJBASE)/test
-BIN		= $(BINBASE)/test
+BIN		= $(BINBASE)
 
 BASE		= ..
 COMMON		= ../common
