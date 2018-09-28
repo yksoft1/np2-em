@@ -39,7 +39,7 @@ CFLAGS	=	-O3 -Wstrict-overflow=0 -Wstrict-aliasing=0 -I. -I.. \
 			-I$(NP2_PATH)/vram \
 			-I$(NP2_PATH)/zlib 			
 
-CFLAGS	+=	-DCPUCORE_IA32 -DUSE_FPU  $(SDL_CFLAGS) 
+CFLAGS	+=	-DCPUCORE_IA32  $(SDL_CFLAGS) 
 LFLAGS	= 	
 
 ifeq ($(EMULARITY), 1)
@@ -69,7 +69,6 @@ CPPSRCS	=	./main.c \
 			$(wildcard $(NP2_PATH)/i386c/*.c) \
 			$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
 			$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
-			$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c \
 			$(NP2_PATH)/i386c/ia32/instructions/fpu/fpdummy.c \
 			$(wildcard $(NP2_PATH)/io/*.c) \
 			$(wildcard $(NP2_PATH)/lio/*.c) \
@@ -81,6 +80,12 @@ CPPSRCS	=	./main.c \
 			$(wildcard $(NP2_PATH)/sound/vermouth/*.c) \
 			$(wildcard $(NP2_PATH)/vram/*.c) \
 			$(wildcard $(NP2_PATH)/zlib/*.c)
+
+ifeq ($(FPU), 1)
+CPPSRCS += $(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c 
+CFLAGS +=  -DUSE_FPU
+HTMLFLAGS += -s BINARYEN_TRAP_MODE="clamp" 
+endif
 			
 OBJS = $(addsuffix .o,$(basename $(CPPSRCS)))
 LIBS = -lm  $(SDL_LIBS) 
@@ -106,9 +111,9 @@ html: $(TARGET)
 ifeq ($(PRELOAD), 1)
 # Use -s BINARYEN_TRAP_MODE="clamp" for FPU...
 	$(CC) -O3 -s USE_SDL=2 -s WASM=$(WASM) -s TOTAL_MEMORY=$(EMSCRIPTEN_TOTAL_MEMORY)  -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 \
-	-s EMTERPRETIFY_WHITELIST=@em.txt $(TARGET) -s BINARYEN_TRAP_MODE="clamp" \
+	-s EMTERPRETIFY_WHITELIST=@em.txt $(TARGET) $(HTMLFLAGS) \
 	--preload-file $(PREFILE) -o $(basename $(TARGET)).html 
 else
 	$(CC) -O3 -s USE_SDL=2 -s WASM=$(WASM) -s TOTAL_MEMORY=$(EMSCRIPTEN_TOTAL_MEMORY)  -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 \
-	-s EMTERPRETIFY_WHITELIST=@em.txt $(TARGET) -s BINARYEN_TRAP_MODE="clamp" -o $(basename $(TARGET)).html 
+	-s EMTERPRETIFY_WHITELIST=@em.txt $(TARGET) $(HTMLFLAGS) -o $(basename $(TARGET)).html 
 endif

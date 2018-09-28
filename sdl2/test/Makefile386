@@ -25,7 +25,7 @@ CFLAGS	=	-Wall -O3 -Wstrict-overflow=0 -Wstrict-aliasing=0 -I. -I.. \
 			-I$(NP2_PATH)/vram \
 			-I$(NP2_PATH)/zlib
 
-CFLAGS	+=	-DCPUCORE_IA32 -DUSE_FPU  $(shell sdl2-config --cflags)
+CFLAGS	+=	-DCPUCORE_IA32  $(shell sdl2-config --cflags)
 LFLAGS	=
 
 TARGET	=	np2-386
@@ -51,7 +51,6 @@ CPPSRCS	=	./main.c \
 			$(wildcard $(NP2_PATH)/i386c/*.c) \
 			$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
 			$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
-			$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c \
 			$(NP2_PATH)/i386c/ia32/instructions/fpu/fpdummy.c \
 			$(wildcard $(NP2_PATH)/io/*.c) \
 			$(wildcard $(NP2_PATH)/lio/*.c) \
@@ -63,6 +62,11 @@ CPPSRCS	=	./main.c \
 			$(wildcard $(NP2_PATH)/sound/vermouth/*.c) \
 			$(wildcard $(NP2_PATH)/vram/*.c) \
 			$(wildcard $(NP2_PATH)/zlib/*.c)
+
+ifeq ($(FPU), 1)
+CPPSRCS += $(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c 
+CFLAGS +=  -DUSE_FPU
+endif
 
 OBJS = $(addsuffix .o,$(basename $(CPPSRCS)))
 LIBS = -lm $(shell sdl2-config --libs)
