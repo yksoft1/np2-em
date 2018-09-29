@@ -84,7 +84,7 @@ CPPSRCS	=	./main.c \
 ifeq ($(FPU), 1)
 CPPSRCS += $(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c 
 CFLAGS +=  -DUSE_FPU
-HTMLFLAGS += -s BINARYEN_TRAP_MODE="clamp" 
+HTMLFLAGS += -s BINARYEN_TRAP_MODE="js" 
 endif
 			
 OBJS = $(addsuffix .o,$(basename $(CPPSRCS)))
@@ -109,7 +109,7 @@ clean:
 
 html: $(TARGET)
 ifeq ($(PRELOAD), 1)
-# Use -s BINARYEN_TRAP_MODE="clamp" for FPU...
+# Use -s BINARYEN_TRAP_MODE="js" for FPU...
 	$(CC) -O3 -s USE_SDL=2 -s WASM=$(WASM) -s TOTAL_MEMORY=$(EMSCRIPTEN_TOTAL_MEMORY)  -s EMTERPRETIFY=1 -s EMTERPRETIFY_ASYNC=1 \
 	-s EMTERPRETIFY_WHITELIST=@em.txt $(TARGET) $(HTMLFLAGS) \
 	--preload-file $(PREFILE) -o $(basename $(TARGET)).html 
