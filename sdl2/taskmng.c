@@ -117,12 +117,12 @@ void taskmng_rol(void) {
 				}
 			}
 			else {
-				sdlkbd_keydown(e.key.keysym.sym);
+				sdlkbd_keydown(e.key.keysym.scancode);
 			}
 			break;
 
 		case SDL_KEYUP:
-			sdlkbd_keyup(e.key.keysym.sym);
+			sdlkbd_keyup(e.key.keysym.scancode);
 			break;
 
 		case SDL_QUIT:

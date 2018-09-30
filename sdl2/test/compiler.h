@@ -111,11 +111,22 @@ typedef	unsigned char	BOOL;
 #define SOUND_CRITICAL
 #define	SOUNDRESERVE	100
 
+#define SUPPORT_NORMALDISP
 #define	SUPPORT_CRT15KHZ
 #define	SUPPORT_HOSTDRV
 #define	SUPPORT_SWSEEKSND
 #define	SUPPORT_SASI
 #define	SUPPORT_SCSI
+
+#if defined(CPUCORE_IA32)
+#define IA32_PAGING_EACHSIZE
+#define IA32_REBOOT_ON_PANIC
+#endif
+
+#if defined(SUPPORT_PC9821)
+#define	SUPPORT_CRT31KHZ
+#define	SUPPORT_PC9801_119
+#endif
 
 #define SUPPORT_ARC
 #define SUPPORT_ZLIB

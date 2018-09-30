@@ -71,6 +71,7 @@ typedef	unsigned long long	UINT64;
 
 #define	SOUNDRESERVE	100
 
+#define SUPPORT_NORMALDISP
 #define	SUPPORT_CRT15KHZ
 #define	SUPPORT_HOSTDRV
 #define	SUPPORT_SWSEEKSND
@@ -78,6 +79,15 @@ typedef	unsigned long long	UINT64;
 #define	SUPPORT_SCSI
 #define RESOURCE_US  1
 
+#if defined(CPUCORE_IA32)
+#define IA32_PAGING_EACHSIZE
+#define IA32_REBOOT_ON_PANIC
+#endif
+
+#if defined(SUPPORT_PC9821)
+#define	SUPPORT_CRT31KHZ
+#define	SUPPORT_PC9801_119
+#endif
 
 #define	SCREEN_BPP		16
 

@@ -343,6 +343,23 @@ static void sys_cmd(MENUID id) {
 			np2cfg.EXTMEM = 7;
 			update |= SYS_UPDATECFG;
 			break;
+			
+		case MID_MEM136:
+			np2cfg.EXTMEM = 13;
+			update |= SYS_UPDATECFG;
+			break;
+#ifdef SUPPORT_PC9821			
+		case MID_MEM166:
+			np2cfg.EXTMEM = 16;
+			update |= SYS_UPDATECFG;
+			break;
+			
+		case MID_MEM326:
+			np2cfg.EXTMEM = 32;
+			update |= SYS_UPDATECFG;
+			break;
+#endif
+
 #if 0
 		case IDM_MOUSE:
 			mousemng_toggle(MOUSEPROC_SYSTEM);
@@ -519,6 +536,11 @@ BRESULT sysmenu_menuopen(UINT menutype, int x, int y) {
 	menusys_setcheck(MID_MEM16, (b == 1));
 	menusys_setcheck(MID_MEM36, (b == 3));
 	menusys_setcheck(MID_MEM76, (b == 7));
+	menusys_setcheck(MID_MEM136, (b == 13));
+#ifdef SUPPORT_PC9821
+	menusys_setcheck(MID_MEM166, (b == 16));
+	menusys_setcheck(MID_MEM326, (b == 32));
+#endif
 	menusys_setcheck(MID_JOYX, (np2cfg.BTN_MODE & 1));
 	menusys_setcheck(MID_RAPID, (np2cfg.BTN_RAPID & 1));
 	menusys_setcheck(MID_MSRAPID, (np2cfg.MOUSERAPID & 1));

@@ -72,6 +72,11 @@ static const char str_mem640[] = "640KB";
 static const char str_mem16[] = "1.6MB";
 static const char str_mem36[] = "3.6MB";
 static const char str_mem76[] = "7.6MB";
+static const char str_mem136[] = "13.6MB";
+#ifdef SUPPORT_PC9821
+static const char str_mem166[] = "15.6MB";
+static const char str_mem326[] = "31.6MB";
+#endif
 
 static const char str_mouse[] = "Mouse";
 static const char str_seropt[] = "Serial option...";
@@ -224,8 +229,15 @@ static const MSYSITEM s_mem[] = {
 		{str_mem640,		NULL,		MID_MEM640,			0},
 		{str_mem16,			NULL,		MID_MEM16,			0},
 		{str_mem36,			NULL,		MID_MEM36,			0},
-		{str_mem76,			NULL,		MID_MEM76,			MENU_DELETED}};
-
+		{str_mem76,			NULL,		MID_MEM76,			0},
+#ifndef SUPPORT_PC9821
+		{str_mem136,		NULL,		MID_MEM136,			MENU_DELETED}};
+#else
+		{str_mem136,		NULL,		MID_MEM136,			0},
+		{str_mem166,		NULL,		MID_MEM166,			0},
+		{str_mem326,		NULL,		MID_MEM326,			MENU_DELETED}};
+#endif
+		
 static const MSYSITEM s_device[] = {
 		{str_keyboard,		s_keybd,	MID_STATIC,			0},
 		{str_beep,			s_beep,		MID_STATIC,			0},
