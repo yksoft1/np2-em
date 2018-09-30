@@ -21,10 +21,12 @@ static void mousecapture(BOOL capture) {
 	{
 		//SDL_CaptureMouse(TRUE);
 		mousemng_hidecursor();
+		SDL_WM_GrabInput(1);
 	}	
 	else
 	{
 		mousemng_showcursor();
+		SDL_WM_GrabInput(0);
 		//SDL_CaptureMouse(FALSE);
 	}
 }
@@ -108,7 +110,7 @@ void mousemng_hidecursor() {
 	//	SDL_ShowCursor(SDL_DISABLE);
 	//	SDL_SetRelativeMouseMode(SDL_TRUE);
 	SDL_ShowCursor(0);
-	SDL_WM_GrabInput(1);
+	
 	}
 }
 
@@ -116,7 +118,6 @@ void mousemng_showcursor() {
 	// SDL_ShowCursor(SDL_ENABLE);
 	// SDL_SetRelativeMouseMode(SDL_FALSE);
 	SDL_ShowCursor(1);
-	SDL_WM_GrabInput(0);
 }
 
 void mousemng_onmove(SDL_MouseMotionEvent *motion) {

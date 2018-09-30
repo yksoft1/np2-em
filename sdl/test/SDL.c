@@ -384,7 +384,7 @@ SDL_GrabMode SDL_WM_GrabInput(SDL_GrabMode mode)
 			pt.y = y;
 			ClientToScreen(__sdl_hWnd, &pt);
 			SetCursorPos(pt.x,pt.y);
-		}
+		} 
 	} else {
 		ClipCursor(&SDL_bounds);
 		if ( !(SDL_cursorstate & CURSOR_VISIBLE) ) {
