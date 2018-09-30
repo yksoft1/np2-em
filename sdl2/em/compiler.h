@@ -156,3 +156,5 @@ enum {
 #define	VERMOUTHCL
 
 #define	msgbox(title, msg)
+
+#define EMSCRIPTEN_DIR "/emulator/np2/"

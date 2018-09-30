@@ -30,7 +30,7 @@ static	UINT		framecnt;
 static	UINT		waitcnt;
 static	UINT		framemax = 1;
 #if defined (EMSCRIPTEN) && defined(USE_EMULARITY_NP2DIR)
-static	char		datadir[256] = "/emulator/np2/";
+static	char		datadir[256] = EMSCRIPTEN_DIR;
 #else
 static	char		datadir[256] = "./";
 #endif
