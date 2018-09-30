@@ -3,7 +3,6 @@
 
 static	char	__sdl_error[256];
 
-
 int SDL_InitSubSystem(DWORD flags) {
 
 	return(0);
@@ -30,12 +29,17 @@ static	const char	szCaptionName[] = "SDL-Window";
 
 		BOOL		__sdl_avail = FALSE;
 		HWND		__sdl_hWnd = NULL;
+		RECT SDL_bounds = {0, 0, 0, 0};
 		SDL_Surface	*__sdl_vsurf = NULL;
 		int			__sdl_eventw = 0;
 		int			__sdl_mousex = 0;
 		int			__sdl_mousey = 0;
+		int 		oldX=0;
+		int			oldY=0;
 		BYTE		__sdl_mouseb = 0;
 static	SINT16		winkeytbl[256];
+		SDL_GrabMode input_grab;
+		int		 SDL_cursorstate = CURSOR_VISIBLE;
 extern	void		__sdl_videoinit(void);
 extern	void		__sdl_videopaint(HWND hWnd, SDL_Surface *screen);
 extern	void		__sdl_audio_cb(UINT msg, HWAVEOUT hwo, WAVEHDR *whd);
@@ -176,7 +180,11 @@ static LRESULT CALLBACK SdlProc(HWND hWnd, UINT msg,
 			event.motion.state = __sdl_mouseb;
 			event.motion.x = LOWORD(lParam);
 			event.motion.y = HIWORD(lParam);
+			event.motion.xrel = __sdl_mousex - oldX;
+			event.motion.yrel = __sdl_mousey - oldY;
 			SDL_PushEvent(&event);
+			oldX = __sdl_mousex;
+			oldY = __sdl_mousey;
 			break;
 
 		case WM_LBUTTONDOWN:
@@ -264,6 +272,44 @@ static LRESULT CALLBACK SdlProc(HWND hWnd, UINT msg,
 			__sdl_audio_cb(MM_WOM_DONE, (HWAVEOUT)wParam, (WAVEHDR *)lParam);
 			break;
 #endif
+
+		case WM_WINDOWPOSCHANGED: {
+			POINT pt;
+			//int w, h;
+
+			GetClientRect(__sdl_hWnd, &SDL_bounds);
+
+			/* avoiding type-punning here... */
+			pt.x = SDL_bounds.left;
+			pt.y = SDL_bounds.top;
+			ClientToScreen(__sdl_hWnd, &pt);
+			SDL_bounds.left = pt.x;
+			SDL_bounds.top = pt.y;
+
+			pt.x = SDL_bounds.right;
+			pt.y = SDL_bounds.bottom;
+			ClientToScreen(__sdl_hWnd, &pt);
+			SDL_bounds.right = pt.x;
+			SDL_bounds.bottom = pt.y;
+
+		/*	if ( !SDL_resizing && !IsZoomed(SDL_Window) &&
+			     SDL_PublicSurface &&
+				!(SDL_PublicSurface->flags & SDL_FULLSCREEN) ) {
+				SDL_windowX = SDL_bounds.left;
+				SDL_windowY = SDL_bounds.top;
+			}*/
+			//w = SDL_bounds.right-SDL_bounds.left;
+			//h = SDL_bounds.bottom-SDL_bounds.top;
+			if ( input_grab != SDL_GRAB_OFF ) {
+				ClipCursor(&SDL_bounds);
+			}
+		/*	if ( SDL_PublicSurface && 
+				(SDL_PublicSurface->flags & SDL_RESIZABLE) ) {
+				SDL_PrivateResize(w, h);
+			}*/
+		}
+		break;
+		
 		default:
 			return(DefWindowProc(hWnd, msg, wParam, lParam));
 	}
@@ -321,3 +367,56 @@ int main(int argc, char **argv) {
 	return(r);
 }
 
+
+SDL_GrabMode SDL_WM_GrabInput(SDL_GrabMode mode)
+{
+	
+	if ( mode == SDL_GRAB_OFF ) {
+		ClipCursor(NULL);
+		if ( !(SDL_cursorstate & CURSOR_VISIBLE) ) {
+		/*	RJR: March 28, 2000
+			must be leaving relative mode, move mouse from
+			center of window to where it belongs ... */
+			POINT pt;
+			int x, y;
+			SDL_GetMouseState(&x,&y);
+			pt.x = x;
+			pt.y = y;
+			ClientToScreen(__sdl_hWnd, &pt);
+			SetCursorPos(pt.x,pt.y);
+		}
+	} else {
+		ClipCursor(&SDL_bounds);
+		if ( !(SDL_cursorstate & CURSOR_VISIBLE) ) {
+		/*	RJR: March 28, 2000
+			must be entering relative mode, get ready by
+			moving mouse to	center of window ... */
+			POINT pt;
+			pt.x = (__sdl_vsurf->w/2);
+			pt.y = (__sdl_vsurf->h/2);
+			ClientToScreen(__sdl_hWnd, &pt);
+			SetCursorPos(pt.x, pt.y);
+		}
+	}
+	input_grab=mode;
+	return(mode);
+}
+
+int SDL_ShowCursor (int toggle)
+{
+	int showing;
+
+	showing = (SDL_cursorstate & CURSOR_VISIBLE);
+	if ( toggle >= 0 ) {
+		if ( toggle ) {
+			ShowCursor(TRUE);
+			SDL_cursorstate |= CURSOR_VISIBLE;
+		} else {
+			ShowCursor(FALSE);
+			SDL_cursorstate &= ~CURSOR_VISIBLE;
+		}
+	} else {
+		/* Query current state */ ;
+	}
+	return(showing ? 1 : 0);
+}

@@ -26,6 +26,17 @@ int SDL_InitSubSystem(DWORD flags);
 void SDL_Quit(void);
 char *SDL_GetError(void);
 
+typedef enum {
+	SDL_GRAB_QUERY = -1,
+	SDL_GRAB_OFF = 0,
+	SDL_GRAB_ON = 1//,
+	//SDL_GRAB_FULLSCREEN	/**< Used internally */
+} SDL_GrabMode;
+
+SDL_GrabMode SDL_WM_GrabInput(SDL_GrabMode mode);
+int SDL_ShowCursor (int toggle);
+#define CURSOR_VISIBLE	0x01
+
 #ifdef __cplusplus
 }
 #endif

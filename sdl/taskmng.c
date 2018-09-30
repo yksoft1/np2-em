@@ -1,6 +1,7 @@
 #include	"compiler.h"
 // #include	<signal.h>
 #include	"inputmng.h"
+#include	"mousemng.h"
 #include	"taskmng.h"
 #include	"sdlkbd.h"
 #include	"vramhdl.h"
@@ -38,6 +39,7 @@ void taskmng_rol(void) {
 	switch(e.type) {
 		case SDL_MOUSEMOTION:
 			if (menuvram == NULL) {
+				mousemng_onmove(&e.motion);
 			}
 			else {
 				menubase_moving(e.motion.x, e.motion.y, 0);
@@ -48,7 +50,8 @@ void taskmng_rol(void) {
 			switch(e.button.button) {
 				case SDL_BUTTON_LEFT:
 					if (menuvram == NULL) {
-						sysmenu_menuopen(0, e.button.x, e.button.y);
+						//sysmenu_menuopen(0, e.button.x, e.button.y);
+						mousemng_buttonevent(&e.button);
 					}
 					else {
 						menubase_moving(e.button.x, e.button.y, 2);
@@ -56,6 +59,9 @@ void taskmng_rol(void) {
 					break;
 
 				case SDL_BUTTON_RIGHT:
+					if (menuvram == NULL) {
+ 						mousemng_buttonevent(&e.button);
+ 					}
 					break;
 			}
 			break;
@@ -64,6 +70,7 @@ void taskmng_rol(void) {
 			switch(e.button.button) {
 				case SDL_BUTTON_LEFT:
 					if (menuvram == NULL) {
+						mousemng_buttonevent(&e.button);
 					}
 					else {
 						menubase_moving(e.button.x, e.button.y, 1);
@@ -71,6 +78,9 @@ void taskmng_rol(void) {
 					break;
 
 				case SDL_BUTTON_RIGHT:
+					if (menuvram == NULL) {
+ 						mousemng_buttonevent(&e.button);
+ 					}
 					break;
 			}
 			break;
@@ -84,6 +94,12 @@ void taskmng_rol(void) {
 					menubase_close();
 				}
 			}
+			else if (e.key.keysym.sym == SDLK_F12) {
+ 				//if ((e.key.keysym.mod == KMOD_LCTRL) || (e.key.keysym.mod == KMOD_RCTRL)) {
+ 					//use CTRL+F12 to lock mouse like win32 builds do
+ 					mousemng_toggle(MOUSEPROC_SYSTEM);
+ 				//}
+ 			}
 			else {
 				sdlkbd_keydown(e.key.keysym.sym);
 			}

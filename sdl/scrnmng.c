@@ -6,7 +6,7 @@
 #include	"scrndraw.h"
 #include	"vramhdl.h"
 #include	"menubase.h"
-
+#include	"mousemng.h"
 
 typedef struct {
 	BOOL		enable;
@@ -46,8 +46,8 @@ static BOOL calcdrawrect(SDL_Surface *surface,
 	dr->yalign = surface->pitch;
 	dr->srcpos = 0;
 	dr->dstpos = 0;
-	dr->width = min(scrnmng.width, s->width);
-	dr->height = min(scrnmng.height, s->height);
+	dr->width = max(scrnmng.width, s->width);
+	dr->height = max(scrnmng.height, s->height);
 	if (rt) {
 		pos = max(rt->left, 0);
 		dr->srcpos += pos;
@@ -160,13 +160,17 @@ RGB16 scrnmng_makepal16(RGB32 pal32) {
 }
 
 void scrnmng_setwidth(int posx, int width) {
-
+	SDL_SetVideoMode(width, scrnmng.height, scrnmng.bpp,
+		    SDL_HWSURFACE | SDL_ANYFORMAT | SDL_DOUBLEBUF );//| SDL_FULLSCREEN);
 	scrnstat.width = width;
+	scrnmng.width = width;
 }
 
 void scrnmng_setheight(int posy, int height) {
-
+	SDL_SetVideoMode(scrnmng.width, height, scrnmng.bpp,
+		    SDL_HWSURFACE | SDL_ANYFORMAT | SDL_DOUBLEBUF );//| SDL_FULLSCREEN);
 	scrnstat.height = height;
+	scrnmng.height = height;
 }
 
 const SCRNSURF *scrnmng_surflock(void) {
@@ -191,8 +195,8 @@ const SCRNSURF *scrnmng_surflock(void) {
 		scrnsurf.yalign = scrnmng.vram->yalign;
 		scrnsurf.bpp = scrnmng.vram->bpp;
 	}
-	scrnsurf.width = min(scrnstat.width, 640);
-	scrnsurf.height = min(scrnstat.height, 400);
+	scrnsurf.width = max(scrnstat.width, 640);
+	scrnsurf.height = max(scrnstat.height, 400);
 	scrnsurf.extend = 0;
 	return(&scrnsurf);
 }
@@ -222,6 +226,8 @@ const BYTE		*a;
 	if (surface == NULL) {
 		return;
 	}
+	
+	mousemng_hidecursor();
 	SDL_LockSurface(surface);
 	if (calcdrawrect(surface, &dr, menuvram, &rt) == SUCCESS) {
 		switch(scrnmng.bpp) {
@@ -294,6 +300,8 @@ const BYTE		*a;
 	}
 	SDL_UnlockSurface(surface);
 	SDL_Flip(surface);
+	
+	mousemng_showcursor();
 }
 
 void scrnmng_surfunlock(const SCRNSURF *surf) {
@@ -335,6 +343,7 @@ BOOL scrnmng_entermenu(SCRNMENU *smenu) {
 	smenu->width = scrnmng.width;
 	smenu->height = scrnmng.height;
 	smenu->bpp = (scrnmng.bpp == 32)?24:scrnmng.bpp;
+	mousemng_showcursor();
 	return(SUCCESS);
 
 smem_err:
@@ -344,6 +353,8 @@ smem_err:
 void scrnmng_leavemenu(void) {
 
 	VRAM_RELEASE(scrnmng.vram);
+	if(ismouse_captured())
+ 		mousemng_hidecursor();
 }
 
 void scrnmng_menudraw(const RECT_T *rct) {
@@ -365,6 +376,8 @@ const BYTE		*q;
 	if (surface == NULL) {
 		return;
 	}
+	
+	mousemng_hidecursor();
 	SDL_LockSurface(surface);
 	if (calcdrawrect(surface, &dr, menuvram, rct) == SUCCESS) {
 		switch(scrnmng.bpp) {
@@ -466,5 +479,7 @@ const BYTE		*q;
 	}
 	SDL_UnlockSurface(surface);
 	SDL_Flip(surface);
+	
+	mousemng_showcursor();
 }
 
