@@ -11,6 +11,9 @@
 #include "unasm.h"
 #include "cpucore.h"
 
+#ifdef __MINGW32__
+#include "minmax.h"
+#endif
 /**
  * コンストラクタ
  * @param[in] lpView ビューワ インスタンス

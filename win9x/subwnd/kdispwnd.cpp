@@ -13,6 +13,10 @@
 #include "dialog/np2class.h"
 #include "generic/keydisp.h"
 
+#ifdef __MINGW32__
+#include "minmax.h"
+#endif
+
 extern WINLOCEX np2_winlocexallwin(HWND base);
 
 #if defined(SUPPORT_KEYDISP)

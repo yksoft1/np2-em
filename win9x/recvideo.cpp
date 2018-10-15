@@ -5,6 +5,14 @@
 
 #include "compiler.h"
 
+#ifdef __MINGW32__
+#include 	"minmax.h"
+
+#ifndef comptypeDIB
+#define comptypeDIB  mmioFOURCC('D','I','B',' ')
+#endif
+#endif
+
 #if defined(SUPPORT_RECVIDEO)
 
 #include "recvideo.h"

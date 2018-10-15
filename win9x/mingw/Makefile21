@@ -1,0 +1,141 @@
+# makefile for arm-linux
+#   gcc version 4
+
+CC		=	gcc
+CXX		=	g++
+WINDRES =   windres
+STRIP	=	strip
+RM		=	rm -f
+
+NP2_PATH	= ../..
+
+CFLAGS	=	-O3 -Wstrict-overflow=0 -Wstrict-aliasing=0 -Wno-narrowing -DNDEBUG -DSUPPORT_PC9821 -DUSE_FPU -I. -I.. \
+			-I$(NP2_PATH) \
+			-I$(NP2_PATH)/codecnv \
+			-I$(NP2_PATH)/common \
+			-I$(NP2_PATH)/i386c \
+			-I$(NP2_PATH)/i386c/ia32 \
+			-I$(NP2_PATH)/i386c/ia32/instructions \
+			-I$(NP2_PATH)/i386c/ia32/instructions/fpu \
+			-I$(NP2_PATH)/mem \
+			-I$(NP2_PATH)/io \
+			-I$(NP2_PATH)/fdd \
+			-I$(NP2_PATH)/cbus \
+			-I$(NP2_PATH)/sound \
+			-I$(NP2_PATH)/vram \
+			-I$(NP2_PATH)/generic \
+			-I$(NP2_PATH)/zlib \
+			-I$(NP2_PATH)/win9x/dialog \
+			-I$(NP2_PATH)/win9x/misc \
+			-I$(NP2_PATH)/win9x/subwnd \
+			-I$(NP2_PATH)/win9x/ext \
+			-I$(NP2_PATH)/win9x/ext/c86cpl \
+			-I$(NP2_PATH)/win9x/ext/romeo \
+			-I$(NP2_PATH)/win9x/ext/scci 
+
+
+#CFLAGS	+=	$(shell sdl2-config --cflags)
+LFLAGS	= -static -mwindows
+
+TARGET	=	np21.exe
+
+CPPSRCS	=	$(NP2_PATH)/calendar.c \
+			$(NP2_PATH)/debugsub386.c \
+			$(NP2_PATH)/keystat.c \
+			$(NP2_PATH)/nevent.c \
+			$(NP2_PATH)/pccore.c \
+			$(NP2_PATH)/statsave.c \
+			$(NP2_PATH)/timing.c \
+			$(wildcard $(NP2_PATH)/bios/*.c) \
+			$(wildcard $(NP2_PATH)/cbus/*.c) \
+			$(NP2_PATH)/codecnv/tcswap16.c \
+			$(NP2_PATH)/codecnv/ucs2utf8.c \
+			$(NP2_PATH)/codecnv/utf8ucs2.c \
+			$(wildcard $(NP2_PATH)/fdd/*.c) \
+			$(wildcard $(NP2_PATH)/font/*.c) \
+			$(wildcard $(NP2_PATH)/generic/*.c) \
+			$(wildcard $(NP2_PATH)/io/*.c) \
+			$(wildcard $(NP2_PATH)/lio/*.c) \
+			$(wildcard $(NP2_PATH)/mem/*.c) \
+			$(wildcard $(NP2_PATH)/sound/vermouth/*.c) \
+			$(wildcard $(NP2_PATH)/sound/getsnd/*.c) \
+			$(NP2_PATH)/sound/adpcmg.c \
+			$(NP2_PATH)/sound/adpcmc.c \
+			$(NP2_PATH)/sound/beepg.c \
+			$(NP2_PATH)/sound/beepc.c \
+			$(NP2_PATH)/sound/cs4231g.c \
+			$(NP2_PATH)/sound/cs4231c.c \
+			$(NP2_PATH)/sound/fmboard.c \
+			$(NP2_PATH)/sound/oplgeng.c \
+			$(NP2_PATH)/sound/oplgenc.c \
+			$(NP2_PATH)/sound/opngeng.c \
+			$(NP2_PATH)/sound/opngenc.c \
+			$(NP2_PATH)/sound/opntimer.c \
+			$(NP2_PATH)/sound/pcm86g.c \
+			$(NP2_PATH)/sound/pcm86c.c \
+			$(NP2_PATH)/sound/pcmmix.c \
+			$(NP2_PATH)/sound/psggeng.c \
+			$(NP2_PATH)/sound/psggenc.c \
+			$(NP2_PATH)/sound/rhythmc.c \
+			$(NP2_PATH)/sound/s98.c \
+			$(NP2_PATH)/sound/sndcsec.c \
+			$(NP2_PATH)/sound/sound.c \
+			$(NP2_PATH)/sound/soundrom.c \
+			$(NP2_PATH)/sound/tms3631c.c \
+			$(NP2_PATH)/sound/tms3631g.c \
+			$(wildcard $(NP2_PATH)/trap/*.c) \
+			$(wildcard $(NP2_PATH)/vram/*.c) \
+			$(wildcard $(NP2_PATH)/i386c/*.c) \
+			$(wildcard $(NP2_PATH)/i386c/ia32/*.c) \
+			$(wildcard $(NP2_PATH)/i386c/ia32/instructions/*.c) \
+			$(NP2_PATH)/i386c/ia32/instructions/fpu/fpdummy.c \
+			$(NP2_PATH)/i386c/ia32/instructions/fpu/fpemul_dosbox2.c \
+			$(NP2_PATH)/common/_memory.c \
+			$(NP2_PATH)/common/arc.c \
+			$(NP2_PATH)/common/arcunzip.c \
+			$(NP2_PATH)/common/bmpdata.c \
+			$(NP2_PATH)/common/lstarray.c \
+			$(NP2_PATH)/common/milstr.c \
+			$(NP2_PATH)/common/mimpidef.c \
+			$(NP2_PATH)/common/parts.c \
+			$(NP2_PATH)/common/profile.c \
+			$(NP2_PATH)/common/strres.c \
+			$(NP2_PATH)/common/textfile.c \
+			$(NP2_PATH)/common/wavefile.c \
+			$(wildcard $(NP2_PATH)/win9x/*.cpp)\
+			$(wildcard $(NP2_PATH)/win9x/dialog/*.cpp)\
+			$(wildcard $(NP2_PATH)/win9x/misc/*.cpp)\
+			$(NP2_PATH)/win9x/soundmng/sddsound3.cpp \
+			$(wildcard $(NP2_PATH)/win9x/commng/*.cpp)\
+			$(wildcard $(NP2_PATH)/win9x/debuguty/*.cpp)\
+			$(wildcard $(NP2_PATH)/win9x/subwnd/*.cpp)\
+			$(wildcard $(NP2_PATH)/win9x/ext/*.cpp)\
+			$(wildcard $(NP2_PATH)/win9x/ext/c86ctl/*.cpp)\
+			$(wildcard $(NP2_PATH)/win9x/ext/romeo/*.cpp)\
+			$(wildcard $(NP2_PATH)/win9x/ext/scci/*.cpp)\
+			$(wildcard $(NP2_PATH)/zlib/*.c)
+
+OBJS = $(addsuffix .o,$(basename $(CPPSRCS)))
+LIBS =  -lstdc++ -lm -lcomctl32 -lcomdlg32 -lwinmm -ldxguid -lddraw -ldsound -lavifil32 -lvfw32
+
+.SUFFIXES: .c.o
+.SUFFIXES: .cpp.o
+.SUFFIXES: .rc.o
+
+all:	$(TARGET)
+
+$(TARGET):	$(OBJS) $(NP2_PATH)/win9x/mingw/np2_mingw.o
+	$(CC) $(LFLAGS) -g -o $@ $(OBJS) $(NP2_PATH)/win9x/mingw/np2_mingw.o $(LIBS) 
+	$(STRIP) $@
+
+.c.o:
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+.cpp.o:
+	$(CXX) $(CFLAGS) -c -o $@ $<
+
+$(NP2_PATH)/win9x/mingw/np2_mingw.o: $(NP2_PATH)/win9x/resources/1252/np2.rc
+	$(WINDRES) -i $< -o $@
+		
+clean:
+	rm -f $(TARGET) $(OBJS) $(NP2_PATH)/win9x/mingw/np2_mingw.o

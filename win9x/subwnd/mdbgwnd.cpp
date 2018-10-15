@@ -14,6 +14,10 @@
 
 #if defined(CPUCORE_IA32) && defined(SUPPORT_MEMDBG32)
 
+#ifdef __MINGW32__
+#include "minmax.h"
+#endif
+
 //! 唯一のインスタンスです
 CMemDebugWnd CMemDebugWnd::sm_instance;
 

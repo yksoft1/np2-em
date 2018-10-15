@@ -4,6 +4,10 @@
 
 #include "mt32snd.h"
 
+#ifdef __MINGW32__
+#include "minmax.h"
+#endif
+
 MT32Sound MT32Sound::sm_instance;
 
 // DLL–¼

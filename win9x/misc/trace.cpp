@@ -6,7 +6,9 @@
 #include "compiler.h"
 #include <stdarg.h>
 #include <string>
+#ifndef __MINGW32__
 #include <atlbase.h>
+#endif
 #include "resource.h"
 #include "WndProc.h"
 #include "strres.h"

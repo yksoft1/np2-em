@@ -21,6 +21,9 @@
 #include "pccore.h"
 #include "common/strres.h"
 
+#ifdef __MINGW32__
+#include "minmax.h"
+#endif
 /**
  * @brief 設定ダイアログ
  * @param[in] hwndParent 親ウィンドウ
@@ -258,8 +261,13 @@ void CConfigureDlg::OnOK()
 	}
 
 	UINT nMultiple = GetDlgItemInt(IDC_MULTIPLE, NULL, FALSE);
+#ifndef __MINGW32__
 	nMultiple = max(nMultiple, 1);
 	nMultiple = min(nMultiple, 32);
+#else
+	nMultiple = mymax(nMultiple, 1);
+	nMultiple = mymin(nMultiple, 32);	
+#endif
 	if (np2cfg.multiple != nMultiple)
 	{
 		np2cfg.multiple = nMultiple;
@@ -309,8 +317,13 @@ void CConfigureDlg::OnOK()
 	}
 
 	UINT nBuffer = GetDlgItemInt(IDC_SOUND_BUFFER, NULL, FALSE);
+#ifndef __MINGW32__
 	nBuffer = max(nBuffer, 40);
 	nBuffer = min(nBuffer, 1000);
+#else
+	nBuffer = mymax(nBuffer, 40);
+	nBuffer = mymin(nBuffer, 1000);	
+#endif
 	if (np2cfg.delayms != static_cast<UINT16>(nBuffer))
 	{
 		np2cfg.delayms = static_cast<UINT16>(nBuffer);
@@ -404,8 +417,13 @@ void CConfigureDlg::SetClock(UINT nMultiple)
 	{
 		nMultiple = GetDlgItemInt(IDC_MULTIPLE, NULL, FALSE);
 	}
+#ifndef __MINGW32__
 	nMultiple = max(nMultiple, 1);
 	nMultiple = min(nMultiple, 32);
+#else
+	nMultiple = mymax(nMultiple, 1);
+	nMultiple = mymin(nMultiple, 32);	
+#endif
 
 	const UINT nClock = (nBaseClock / 100) * nMultiple;
 

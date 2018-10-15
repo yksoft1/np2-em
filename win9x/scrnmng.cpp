@@ -7,6 +7,11 @@
  */
 
 #include "compiler.h"
+
+#ifdef __MINGW32__
+#include 	"minmax.h"
+#endif
+
 #include <ddraw.h>
 #ifndef __GNUC__
 #include <winnls32.h>

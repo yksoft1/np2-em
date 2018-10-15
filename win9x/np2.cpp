@@ -61,7 +61,9 @@
 #include "subwnd/subwnd.h"
 #include "subwnd/toolwnd.h"
 #if !defined(_WIN64)
+#ifndef __MINGW32__
 #include "cputype.h"
+#endif
 #endif
 #if defined(SUPPORT_DCLOCK)
 #include "subwnd\dclock.h"
@@ -1571,8 +1573,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst,
 	CWndProc::SetResourceHandle(hInstance);
 
 #if !defined(_WIN64)
+#if !defined(__MINGW32__)
 	mmxflag = (havemmx())?0:MMXFLAG_NOTSUPPORT;
 	mmxflag += (np2oscfg.disablemmx)?MMXFLAG_DISABLE:0;
+#endif
 #endif
 	TRACEINIT();
 

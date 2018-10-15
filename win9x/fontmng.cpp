@@ -1,6 +1,9 @@
 #include	"compiler.h"
 #include	"fontmng.h"
 
+#ifdef __MINGW32__
+#include 	"minmax.h"
+#endif
 
 typedef struct {
 	int			fontsize;

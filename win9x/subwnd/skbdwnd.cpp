@@ -12,6 +12,10 @@
 #include "dialog/np2class.h"
 #include "generic/softkbd.h"
 
+#ifdef __MINGW32__
+#include "minmax.h"
+#endif
+
 #if defined(SUPPORT_SOFTKBD)
 
 //! 唯一のインスタンスです

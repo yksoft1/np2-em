@@ -207,8 +207,13 @@ protected:
 	virtual void OnOK()
 	{
 		UINT nSize = GetDlgItemInt(IDC_HDDSIZE, NULL, FALSE);
+#ifndef __MINGW32__
 		nSize = max(nSize, m_nHddMinSize);
 		nSize = min(nSize, m_nHddMaxSize);
+#else
+		nSize = std::max(nSize, m_nHddMinSize);
+		nSize = std::min(nSize, m_nHddMaxSize);	
+#endif
 		m_nHddSize = nSize;
 		CDlgProc::OnOK();
 	}

@@ -5,6 +5,9 @@
 
 #include "compiler.h"
 #include "tstring.h"
+#ifdef __MINGW32__
+#include "minmax.h"
+#endif
 #include "WndProc.h"
 
 /**
