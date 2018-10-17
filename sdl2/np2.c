@@ -114,13 +114,17 @@ static void processwait(UINT cnt) {
 	}
 }
 
+int hasbootdisk = 0;
+int hasbootdiskHDD = 0;
+char bootdisk[MAX_PATH];
+
 int np2_main(int argc, char *argv[]) {
 
-	int		pos;
+//	int		pos;
 	char	*p;
 	int		id;
 
-	pos = 1;
+/*	pos = 1;
 	while(pos < argc) {
 		p = argv[pos++];
 		if ((!milstr_cmp(p, "-h")) || (!milstr_cmp(p, "--help"))) {
@@ -131,8 +135,18 @@ int np2_main(int argc, char *argv[]) {
 			printf("error command: %s\n", p);
 			goto np2main_err1;
 		}
+	}*/
+	if(argc > 1)
+	{
+		if(strstr(argv[1], ".hdi") || strstr(argv[1], ".HDI")) { //found HDI file
+			hasbootdiskHDD = 1;
+			hasbootdisk = 0;
+		} else {
+			hasbootdiskHDD = 0;
+			hasbootdisk = 1;
+		}
+		milstr_ncpy(bootdisk, argv[1], MAX_PATH);
 	}
-
 	file_setcd(datadir);
 	initload();
 
@@ -172,6 +186,11 @@ int np2_main(int argc, char *argv[]) {
 		}
 	}
 
+	//Try to load floppy disk from cmdline args.
+	if(hasbootdisk)	{
+		diskdrv_setfdd(0, bootdisk, 0);
+	}
+	
 	while(taskmng_isavail()) {
 		taskmng_rol();
 #ifdef EMSCRIPTEN

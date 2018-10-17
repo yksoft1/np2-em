@@ -126,6 +126,13 @@ void ini_read(const char *path, const char *title,
 	iniarg.tbl = tbl;
 	iniarg.tblterm = tbl + count;
 	profile_enum(path, &iniarg, inireadcb);
+	
+	{
+		extern char bootdisk[MAX_PATH];
+		extern int hasbootdiskHDD;
+		if(hasbootdiskHDD)
+			milstr_ncpy(np2cfg.sasihdd[0], bootdisk, MAX_PATH);
+	}
 }
 
 
