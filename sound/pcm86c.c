@@ -83,12 +83,13 @@ void pcm86_cb(NEVENTITEM item)
 {
 	PCM86 pcm86 = &g_pcm86;
 
-	if (((pcm86->cFifoCtrl & 0xa0) == 0xa0) && (pcm86->cIrqFlag == 0))
+	if (pcm86->__cReqIrq)
 	{
 		sound_sync();
 		TRACEOUT(("pcm intr? %d < %d", pcm86->nFifoRemain, pcm86->nFifoIntrSize));
 		if (pcm86->nFifoRemain <= pcm86->nFifoIntrSize)
 		{
+			pcm86->__cReqIrq = 0;
 			pcm86->cIrqFlag = 1;
 			if (pcm86->cIrqLevel != 0xff)
 			{
@@ -112,7 +113,7 @@ void pcm86_setnextintr(void)
 	SINT32 clk;
 	SINT32 cnt;
 
-	if (((pcm86->cFifoCtrl & 0xa0) == 0xa0) && (pcm86->cIrqFlag == 0))
+	if (pcm86->cFifoCtrl & 0x80)
 	{
 		if (pccore.cpumode & CPUMODE_8MHZ)
 		{
@@ -144,7 +145,9 @@ void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86)
 {
 	SINT nDiff;
 	UINT32 nPast;
-
+	static SINT32 lastvirbuf = 0;
+	static UINT32 lastvirbufcnt = 0;
+	
 	nPast = CPU_CLOCK + CPU_BASECLOCK - CPU_REMCLOCK;
 	nPast <<= 6;
 	nPast -= pcm86->nLastClock;
@@ -155,15 +158,32 @@ void SOUNDCALL pcm86gen_checkbuf(PCM86 pcm86)
 		RECALC_NOWCLKWAIT(pcm86, nPast);
 	}
 
+	// XXX: Windowsでフリーズする問題の暫定対症療法（ある程度時間が経った小さいバッファを捨てる）
+	if(0 < pcm86->nFifoRemain && pcm86->nFifoRemain < 128){
+		if(pcm86->nFifoRemain == lastvirbuf){
+			lastvirbufcnt++;
+			if(lastvirbufcnt > 500){
+				// 500回呼ばれても値が変化しなかったら捨てる
+				pcm86->nFifoRemain = 0;
+				lastvirbufcnt = 0;
+			}
+		}else{
+			lastvirbuf = pcm86->nFifoRemain;
+			lastvirbufcnt = 0;
+		}
+	}else{
+		lastvirbufcnt = 0;
+	}
+	
 	nDiff = pcm86->nBufferCount - pcm86->nFifoRemain;
 	if (nDiff < 0)									/* 処理落ちてる… */
 	{
 		nDiff &= ~3;
 		pcm86->nFifoRemain += nDiff;
-#if 0
+#if 1
 		if (pcm86->nFifoRemain <= pcm86->nFifoIntrSize)
 		{
-			pcm86->cReqIrq = 0;
+			pcm86->__cReqIrq = 0;
 			pcm86->cIrqFlag = 1;
 			if (pcm86->cIrqLevel != 0xff)
 			{
@@ -196,13 +216,13 @@ BOOL pcm86gen_intrq(void)
 	{
 		return TRUE;
 	}
-#if 0
+#if 1
 	if (pcm86->cFifoCtrl & 0x20)
 	{
 		sound_sync();
-		if ((pcm86->cReqIrq) && (pcm86->nFifoRemain <= pcm86->nFifoIntrSize))
+		if ((pcm86->__cReqIrq) && (pcm86->nFifoRemain <= pcm86->nFifoIntrSize))
 		{
-			pcm86->cReqIrq = 0;
+			pcm86->__cReqIrq = 0;
 			pcm86->cIrqFlag = 1;
 			return TRUE;
 		}
