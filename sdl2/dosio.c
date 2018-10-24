@@ -388,7 +388,11 @@ const char	*ret;
 
 	ret = path;
 	while((csize = milstr_charsize(path)) != 0) {
+#if !defined(WIN32)
 		if ((csize == 1) && (*path == '/')) {
+#else
+		if ((csize == 1) && (*path == '\\')) {	
+#endif
 			ret = path + 1;
 		}
 		path += csize;
@@ -447,7 +451,11 @@ void file_cutseparator(char *path) {
 
 	pos = (int)strlen(path) - 1;
 	if ((pos > 0) &&							// 2文字以上でー
-		(path[pos] == '/') &&					// ケツが \ でー
+#if !defined(WIN32)
+		(path[pos] == '/') &&					// ケツが / でー
+#else
+		(path[pos] == '\\') &&					// ケツが \ でー
+#endif
 		((pos != 1) || (path[0] != '.'))) {		// './' ではなかったら
 		path[pos] = '\0';
 	}
@@ -458,9 +466,16 @@ void file_setseparator(char *path, int maxlen) {
 	int		pos;
 
 	pos = (int)strlen(path);
+#if !defined(WIN32)
 	if ((pos) && (path[pos-1] != '/') && ((pos + 2) < maxlen)) {
 		path[pos++] = '/';
 		path[pos] = '\0';
 	}
+#else
+	if ((pos) && (path[pos-1] != '\\') && ((pos + 2) < maxlen)) {
+		path[pos++] = '\\';
+		path[pos] = '\0';
+	}	
+#endif
 }
 

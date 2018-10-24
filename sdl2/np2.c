@@ -29,11 +29,8 @@
 static	UINT		framecnt;
 static	UINT		waitcnt;
 static	UINT		framemax = 1;
-#if defined (EMSCRIPTEN) && defined(USE_EMULARITY_NP2DIR)
-static	char		datadir[256] = EMSCRIPTEN_DIR;
-#else
-static	char		datadir[256] = "./";
-#endif
+
+static	char		exepath[256] = "./";
 
 static void usage(const char *progname) {
 
@@ -136,6 +133,17 @@ int np2_main(int argc, char *argv[]) {
 			goto np2main_err1;
 		}
 	}*/
+	
+#if defined (WIN32)
+	GetModuleFileNameA(NULL, exepath, MAX_PATH);
+#else
+#if !defined (USE_EMULARITY_NP2DIR)
+	strncpy(exepath, argv[0], MAX_PATH);
+#else
+	strncpy(exepath, EMSCRIPTEN_DIR, MAX_PATH);
+#endif
+#endif
+
 	if(argc > 1)
 	{
 		if(strstr(argv[1], ".hdi") || strstr(argv[1], ".HDI")) { //found HDI file
@@ -147,7 +155,7 @@ int np2_main(int argc, char *argv[]) {
 		}
 		milstr_ncpy(bootdisk, argv[1], MAX_PATH);
 	}
-	file_setcd(datadir);
+	file_setcd(exepath);
 	initload();
 
 	TRACEINIT();
