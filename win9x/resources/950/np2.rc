@@ -847,6 +847,8 @@ BEGIN
             MENUITEM "&1.6MB",                      IDM_MEM16
             MENUITEM "&3.6MB",                      IDM_MEM36
             MENUITEM "&7.6MB",                      IDM_MEM76
+			MENUITEM "11.6MB",                      IDM_MEM116
+			MENUITEM "13.&6MB",                      IDM_MEM136			
         END
         MENUITEM "·Æ¹«(&M)",                    IDM_MOUSE
         MENUITEM SEPARATOR
